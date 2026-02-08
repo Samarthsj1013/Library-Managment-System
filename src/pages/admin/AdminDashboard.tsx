@@ -18,7 +18,7 @@ import {
   BookCopy,
   Users,
   AlertCircle,
-  DollarSign,
+  IndianRupee,
   Plus,
   ArrowRight,
   Loader2,
@@ -210,13 +210,13 @@ export default function AdminDashboard() {
           <Card className="dashboard-card">
             <CardHeader className="pb-2">
               <CardTitle className="text-lg flex items-center gap-2">
-                <DollarSign className="h-5 w-5 text-accent" />
+                <IndianRupee className="h-5 w-5 text-accent" />
                 Total Fines Collected
               </CardTitle>
             </CardHeader>
             <CardContent>
-              <p className="text-4xl font-bold text-foreground">${stats.totalFines.toFixed(2)}</p>
-              <p className="text-sm text-muted-foreground mt-1">Fine rate: $1.00 per day overdue</p>
+              <p className="text-4xl font-bold text-foreground">₹{stats.totalFines.toFixed(2)}</p>
+              <p className="text-sm text-muted-foreground mt-1">Fine rate: ₹1.00 per day overdue</p>
             </CardContent>
           </Card>
 

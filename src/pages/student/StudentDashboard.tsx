@@ -15,7 +15,7 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { useAuth } from '@/hooks/useAuth';
 import { supabase } from '@/integrations/supabase/client';
-import { BookCopy, AlertCircle, DollarSign, ArrowRight, Loader2, Calendar } from 'lucide-react';
+import { BookCopy, AlertCircle, IndianRupee, ArrowRight, Loader2, Calendar } from 'lucide-react';
 import { format, parseISO, differenceInDays } from 'date-fns';
 
 // Stats type
@@ -37,7 +37,7 @@ interface IssuedBook {
   fine: number;
 }
 
-// Fine rate: $1 per day
+// Fine rate: ₹1 per day
 const FINE_PER_DAY = 1.0;
 
 export default function StudentDashboard() {
@@ -166,9 +166,9 @@ export default function StudentDashboard() {
             <div className="flex items-center justify-between">
               <div>
                 <p className="text-sm opacity-80">Outstanding Fines</p>
-                <p className="text-3xl font-bold mt-1">${stats.totalFines.toFixed(2)}</p>
+                <p className="text-3xl font-bold mt-1">₹{stats.totalFines.toFixed(2)}</p>
               </div>
-              <DollarSign className="h-10 w-10 opacity-80" />
+              <IndianRupee className="h-10 w-10 opacity-80" />
             </div>
           </div>
         </div>
@@ -222,7 +222,7 @@ export default function StudentDashboard() {
                         Due: {format(parseISO(book.dueDate), 'MMM d, yyyy')}
                       </div>
                       {book.isOverdue ? (
-                        <span className="fine-amount">Fine: ${book.fine.toFixed(2)}</span>
+                        <span className="fine-amount">Fine: ₹{book.fine.toFixed(2)}</span>
                       ) : book.daysUntilDue <= 3 ? (
                         <span className="text-warning font-medium">
                           {book.daysUntilDue === 0 ? 'Due today!' : `${book.daysUntilDue} days left`}
@@ -267,9 +267,9 @@ export default function StudentDashboard() {
               <div>
                 <p className="font-medium text-destructive">Outstanding Fines</p>
                 <p className="text-sm text-muted-foreground mt-1">
-                  You have outstanding fines of <strong>${stats.totalFines.toFixed(2)}</strong>.
+                  You have outstanding fines of <strong>₹{stats.totalFines.toFixed(2)}</strong>.
                   Please return overdue books and pay fines at the library desk.
-                  Fine rate: $1.00 per day after due date.
+                  Fine rate: ₹1.00 per day after due date.
                 </p>
               </div>
             </div>
