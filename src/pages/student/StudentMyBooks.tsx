@@ -32,7 +32,7 @@ interface IssuedBook {
   fine: number;
 }
 
-// Fine rate: $1 per day
+// Fine rate: ₹1 per day
 const FINE_PER_DAY = 1.0;
 
 export default function StudentMyBooks() {
@@ -192,7 +192,7 @@ export default function StudentMyBooks() {
           {book.fine > 0 && (
             <div className="flex items-center justify-between pt-2 border-t border-border">
               <span className="font-medium">Fine:</span>
-              <span className="fine-amount">${book.fine.toFixed(2)}</span>
+              <span className="fine-amount">₹{book.fine.toFixed(2)}</span>
             </div>
           )}
         </div>
@@ -259,7 +259,7 @@ export default function StudentMyBooks() {
         {/* Fine Information */}
         <div className="mt-8 p-4 bg-muted rounded-lg">
           <p className="text-sm text-muted-foreground">
-            <strong>Fine Policy:</strong> Books are issued for 14 days. A fine of $1.00 per day
+            <strong>Fine Policy:</strong> Books are issued for 14 days. A fine of ₹1.00 per day
             is charged for overdue books. Please return books on time to avoid fines.
           </p>
         </div>

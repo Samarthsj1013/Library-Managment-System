@@ -59,7 +59,7 @@ interface IssuedBook {
   status: 'issued' | 'returned' | 'overdue';
 }
 
-// Fine calculation: $1 per day overdue
+// Fine calculation: ₹1 per day overdue
 const FINE_PER_DAY = 1.0;
 
 export default function AdminIssuedBooks() {
@@ -215,7 +215,7 @@ export default function AdminIssuedBooks() {
 
       toast.success(
         finalFine > 0
-          ? `Book returned. Fine collected: $${finalFine.toFixed(2)}`
+          ? `Book returned. Fine collected: ₹${finalFine.toFixed(2)}`
           : 'Book returned successfully'
       );
 
@@ -360,7 +360,7 @@ export default function AdminIssuedBooks() {
                     </TableCell>
                     <TableCell className="text-right">
                       {book.fineAmount > 0 ? (
-                        <span className="fine-amount">${book.fineAmount.toFixed(2)}</span>
+                        <span className="fine-amount">₹{book.fineAmount.toFixed(2)}</span>
                       ) : (
                         '-'
                       )}
@@ -407,9 +407,9 @@ export default function AdminIssuedBooks() {
                       <>
                         This book is <strong>{daysOverdue} days overdue</strong>.
                         <br />
-                        Fine to collect: <strong className="text-destructive">${fine.toFixed(2)}</strong>
+                        Fine to collect: <strong className="text-destructive">₹{fine.toFixed(2)}</strong>
                         <br />
-                        (Rate: ${FINE_PER_DAY.toFixed(2)} per day)
+                        (Rate: ₹{FINE_PER_DAY.toFixed(2)} per day)
                       </>
                     );
                   }

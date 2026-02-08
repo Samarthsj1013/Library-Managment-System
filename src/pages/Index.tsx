@@ -135,7 +135,7 @@ export default function Index() {
               <span className="font-semibold">Library Management System</span>
             </div>
             <p className="text-sm text-muted-foreground">
-              College Project • Built with React & Supabase
+              College Project • Built with React, TypeScript, Tailwind CSS, Vite & Supabase
             </p>
           </div>
         </div>
