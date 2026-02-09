@@ -31,6 +31,7 @@ interface Book {
   author: string;
   category: string;
   quantity: number;
+  cover_image_url: string | null;
 }
 
 export default function StudentBooks() {
@@ -154,9 +155,23 @@ export default function StudentBooks() {
         ) : (
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
             {filteredBooks.map((book) => (
-              <Card key={book.id} className="dashboard-card hover:border-primary/50 transition-colors">
-                <CardContent className="p-6">
-                  <div className="flex items-start justify-between mb-4">
+              <Card key={book.id} className="dashboard-card hover:border-primary/50 transition-colors overflow-hidden">
+                {book.cover_image_url ? (
+                  <div className="aspect-[3/4] w-full overflow-hidden bg-muted">
+                    <img
+                      src={book.cover_image_url}
+                      alt={`Cover of ${book.title}`}
+                      className="w-full h-full object-cover"
+                      loading="lazy"
+                    />
+                  </div>
+                ) : (
+                  <div className="aspect-[3/4] w-full bg-muted flex items-center justify-center">
+                    <BookOpen className="h-16 w-16 text-muted-foreground/30" />
+                  </div>
+                )}
+                <CardContent className="p-4">
+                  <div className="flex items-start justify-between mb-2">
                     <Badge variant="secondary">{book.category}</Badge>
                     <span
                       className={`text-sm font-medium ${
@@ -170,10 +185,10 @@ export default function StudentBooks() {
                       {book.quantity === 0 ? 'Unavailable' : `${book.quantity} available`}
                     </span>
                   </div>
-                  <h3 className="text-lg font-semibold text-foreground mb-1 line-clamp-2">
+                  <h3 className="text-base font-semibold text-foreground mb-1 line-clamp-2">
                     {book.title}
                   </h3>
-                  <p className="text-muted-foreground">by {book.author}</p>
+                  <p className="text-sm text-muted-foreground">by {book.author}</p>
                 </CardContent>
               </Card>
             ))}

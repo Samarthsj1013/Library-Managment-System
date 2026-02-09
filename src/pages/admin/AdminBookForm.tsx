@@ -48,6 +48,7 @@ const bookSchema = z.object({
   author: z.string().min(1, 'Author is required').max(100, 'Author name is too long'),
   category: z.string().min(1, 'Category is required'),
   quantity: z.number().min(0, 'Quantity cannot be negative').max(9999, 'Quantity is too high'),
+  cover_image_url: z.string().url('Please enter a valid URL').or(z.literal('')).optional(),
 });
 
 export default function AdminBookForm() {
@@ -60,6 +61,7 @@ export default function AdminBookForm() {
   const [author, setAuthor] = useState('');
   const [category, setCategory] = useState('');
   const [quantity, setQuantity] = useState(1);
+  const [coverImageUrl, setCoverImageUrl] = useState('');
   const [loading, setLoading] = useState(isEditing);
   const [saving, setSaving] = useState(false);
 
@@ -83,6 +85,7 @@ export default function AdminBookForm() {
             setAuthor(data.author);
             setCategory(data.category);
             setQuantity(data.quantity);
+            setCoverImageUrl(data.cover_image_url || '');
           } else {
             toast.error('Book not found');
             navigate('/admin/books');
@@ -112,6 +115,7 @@ export default function AdminBookForm() {
       author: author.trim(),
       category,
       quantity,
+      cover_image_url: coverImageUrl.trim(),
     });
 
     if (!result.success) {
@@ -131,6 +135,7 @@ export default function AdminBookForm() {
             author: author.trim(),
             category,
             quantity,
+            cover_image_url: coverImageUrl.trim() || null,
           })
           .eq('id', bookId);
 
@@ -143,6 +148,7 @@ export default function AdminBookForm() {
           author: author.trim(),
           category,
           quantity,
+          cover_image_url: coverImageUrl.trim() || null,
         });
 
         if (error) throw error;
@@ -245,6 +251,33 @@ export default function AdminBookForm() {
                 <p className="text-sm text-muted-foreground">
                   Number of copies available in the library
                 </p>
+              </div>
+
+              {/* Cover Image URL Field */}
+              <div className="space-y-2">
+                <Label htmlFor="coverImageUrl">Cover Image URL</Label>
+                <Input
+                  id="coverImageUrl"
+                  type="url"
+                  placeholder="https://example.com/cover.jpg"
+                  value={coverImageUrl}
+                  onChange={(e) => setCoverImageUrl(e.target.value)}
+                />
+                <p className="text-sm text-muted-foreground">
+                  Optional. Paste a URL to a book cover image.
+                </p>
+                {coverImageUrl && (
+                  <div className="mt-2 w-32 aspect-[3/4] rounded-md overflow-hidden border border-border">
+                    <img
+                      src={coverImageUrl}
+                      alt="Cover preview"
+                      className="w-full h-full object-cover"
+                      onError={(e) => {
+                        (e.target as HTMLImageElement).style.display = 'none';
+                      }}
+                    />
+                  </div>
+                )}
               </div>
 
               {/* Submit Button */}
