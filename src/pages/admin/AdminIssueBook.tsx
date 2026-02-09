@@ -272,7 +272,7 @@ export default function AdminIssueBook() {
                   required
                 />
                 <p className="text-sm text-muted-foreground">
-                  Default: 14 days from issue date. Fine rate: $1.00/day after due date.
+                  Default: 14 days from issue date. Fine rate: ₹1.00/day after due date.
                 </p>
               </div>
 
