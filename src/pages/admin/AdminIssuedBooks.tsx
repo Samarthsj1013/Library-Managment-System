@@ -86,12 +86,23 @@ export default function AdminIssuedBooks() {
           due_date,
           return_date,
           fine_amount,
-          books (title),
-          profiles:user_id (name, email)
+          books (title)
         `)
         .order('created_at', { ascending: false });
 
       if (error) throw error;
+
+      // Fetch all profiles for mapping
+      const userIds = [...new Set((data || []).map((d: any) => d.user_id))];
+      const { data: profilesData } = await supabase
+        .from('profiles')
+        .select('user_id, name, email')
+        .in('user_id', userIds.length > 0 ? userIds : ['none']);
+
+      const profileMap: Record<string, { name: string; email: string }> = {};
+      (profilesData || []).forEach((p: any) => {
+        profileMap[p.user_id] = { name: p.name, email: p.email };
+      });
 
       const today = new Date().toISOString().split('T')[0];
 
@@ -116,8 +127,8 @@ export default function AdminIssuedBooks() {
           userId: item.user_id,
           bookId: item.book_id,
           bookTitle: item.books?.title || 'Unknown Book',
-          studentName: item.profiles?.name || 'Unknown Student',
-          studentEmail: item.profiles?.email || '',
+          studentName: profileMap[item.user_id]?.name || 'Unknown Student',
+          studentEmail: profileMap[item.user_id]?.email || '',
           issueDate: item.issue_date,
           dueDate: item.due_date,
           returnDate: item.return_date,

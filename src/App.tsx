@@ -39,6 +39,7 @@ import AdminBookRequests from "./pages/admin/AdminBookRequests";
 import StudentDashboard from "./pages/student/StudentDashboard";
 import StudentBooks from "./pages/student/StudentBooks";
 import StudentMyBooks from "./pages/student/StudentMyBooks";
+import StudentMyRequests from "./pages/student/StudentMyRequests";
 
 import { Loader2 } from "lucide-react";
 
@@ -184,6 +185,14 @@ function AppRoutes() {
         element={
           <ProtectedRoute requiredRole="student">
             <StudentMyBooks />
+          </ProtectedRoute>
+        }
+      />
+      <Route
+        path="/student/requests"
+        element={
+          <ProtectedRoute requiredRole="student">
+            <StudentMyRequests />
           </ProtectedRoute>
         }
       />

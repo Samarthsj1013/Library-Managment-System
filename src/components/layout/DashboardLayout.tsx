@@ -46,6 +46,7 @@ const studentNavItems: NavItem[] = [
   { label: 'Dashboard', href: '/student', icon: <LayoutDashboard className="h-5 w-5" /> },
   { label: 'Browse Books', href: '/student/books', icon: <BookCopy className="h-5 w-5" /> },
   { label: 'My Books', href: '/student/my-books', icon: <ClipboardList className="h-5 w-5" /> },
+  { label: 'My Requests', href: '/student/requests', icon: <Inbox className="h-5 w-5" /> },
 ];
 
 interface DashboardLayoutProps {
