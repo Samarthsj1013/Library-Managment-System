@@ -45,21 +45,25 @@ export default function AdminStudents() {
   useEffect(() => {
     const fetchStudents = async () => {
       try {
-        // Fetch students with their profile info
+        // Fetch student role records
         const { data: rolesData, error: rolesError } = await supabase
           .from('user_roles')
-          .select(`
-            id,
-            user_id,
-            profiles!user_roles_user_id_fkey (
-              name,
-              email,
-              created_at
-            )
-          `)
+          .select('id, user_id')
           .eq('role', 'student');
 
         if (rolesError) throw rolesError;
+
+        // Fetch profiles for these users
+        const userIds = (rolesData || []).map((r: any) => r.user_id);
+        const { data: profilesData } = await supabase
+          .from('profiles')
+          .select('user_id, name, email, created_at')
+          .in('user_id', userIds.length > 0 ? userIds : ['none']);
+
+        const profileMap: Record<string, any> = {};
+        (profilesData || []).forEach((p: any) => {
+          profileMap[p.user_id] = p;
+        });
 
         // Fetch issued books count for each student
         const { data: issuedData, error: issuedError } = await supabase
@@ -79,9 +83,9 @@ export default function AdminStudents() {
         const studentsList: Student[] = (rolesData || []).map((role: any) => ({
           id: role.id,
           userId: role.user_id,
-          name: role.profiles?.name || 'Unknown',
-          email: role.profiles?.email || 'Unknown',
-          createdAt: role.profiles?.created_at || new Date().toISOString(),
+          name: profileMap[role.user_id]?.name || 'Unknown',
+          email: profileMap[role.user_id]?.email || 'Unknown',
+          createdAt: profileMap[role.user_id]?.created_at || new Date().toISOString(),
           booksIssued: issuedCounts[role.user_id] || 0,
         }));
 

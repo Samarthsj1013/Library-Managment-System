@@ -220,38 +220,6 @@ export default function AdminDashboard() {
             </CardContent>
           </Card>
 
-          {/* Quick Actions */}
-          <Card className="dashboard-card">
-            <CardHeader className="pb-2">
-              <CardTitle className="text-lg">Quick Actions</CardTitle>
-            </CardHeader>
-            <CardContent className="grid grid-cols-2 gap-3">
-              <Link to="/admin/books/new">
-                <Button variant="outline" className="w-full justify-start">
-                  <Plus className="h-4 w-4 mr-2" />
-                  Add New Book
-                </Button>
-              </Link>
-              <Link to="/admin/issued/new">
-                <Button variant="outline" className="w-full justify-start">
-                  <BookCopy className="h-4 w-4 mr-2" />
-                  Issue Book
-                </Button>
-              </Link>
-              <Link to="/admin/books">
-                <Button variant="outline" className="w-full justify-start">
-                  <BookCopy className="h-4 w-4 mr-2" />
-                  Manage Books
-                </Button>
-              </Link>
-              <Link to="/admin/issued">
-                <Button variant="outline" className="w-full justify-start">
-                  <AlertCircle className="h-4 w-4 mr-2" />
-                  View Overdue
-                </Button>
-              </Link>
-            </CardContent>
-          </Card>
         </div>
 
         {/* Recent Activities */}
