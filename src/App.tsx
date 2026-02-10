@@ -33,6 +33,7 @@ import AdminBookForm from "./pages/admin/AdminBookForm";
 import AdminStudents from "./pages/admin/AdminStudents";
 import AdminIssuedBooks from "./pages/admin/AdminIssuedBooks";
 import AdminIssueBook from "./pages/admin/AdminIssueBook";
+import AdminBookRequests from "./pages/admin/AdminBookRequests";
 
 // Student pages
 import StudentDashboard from "./pages/student/StudentDashboard";
@@ -149,6 +150,14 @@ function AppRoutes() {
         element={
           <ProtectedRoute requiredRole="admin">
             <AdminIssueBook />
+          </ProtectedRoute>
+        }
+      />
+      <Route
+        path="/admin/requests"
+        element={
+          <ProtectedRoute requiredRole="admin">
+            <AdminBookRequests />
           </ProtectedRoute>
         }
       />

@@ -21,6 +21,7 @@ import {
   LogOut,
   Menu,
   X,
+  Inbox,
 } from 'lucide-react';
 import { useState } from 'react';
 import { cn } from '@/lib/utils';
@@ -37,6 +38,7 @@ const adminNavItems: NavItem[] = [
   { label: 'Books', href: '/admin/books', icon: <BookCopy className="h-5 w-5" /> },
   { label: 'Students', href: '/admin/students', icon: <Users className="h-5 w-5" /> },
   { label: 'Issued Books', href: '/admin/issued', icon: <ClipboardList className="h-5 w-5" /> },
+  { label: 'Requests', href: '/admin/requests', icon: <Inbox className="h-5 w-5" /> },
 ];
 
 // Navigation items for student dashboard

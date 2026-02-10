@@ -12,6 +12,7 @@
 import { useEffect, useState } from 'react';
 import DashboardLayout from '@/components/layout/DashboardLayout';
 import { Input } from '@/components/ui/input';
+import { Button } from '@/components/ui/button';
 import {
   Select,
   SelectContent,
@@ -22,7 +23,9 @@ import {
 import { Card, CardContent } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { supabase } from '@/integrations/supabase/client';
-import { Search, Loader2, BookOpen } from 'lucide-react';
+import { useAuth } from '@/hooks/useAuth';
+import { Search, Loader2, BookOpen, SendHorizonal } from 'lucide-react';
+import { toast } from 'sonner';
 
 // Book type definition
 interface Book {
@@ -35,19 +38,23 @@ interface Book {
 }
 
 export default function StudentBooks() {
+  const { user } = useAuth();
   const [books, setBooks] = useState<Book[]>([]);
   const [filteredBooks, setFilteredBooks] = useState<Book[]>([]);
   const [categories, setCategories] = useState<string[]>([]);
   const [searchQuery, setSearchQuery] = useState('');
   const [categoryFilter, setCategoryFilter] = useState('all');
   const [loading, setLoading] = useState(true);
+  const [requestedBookIds, setRequestedBookIds] = useState<Set<string>>(new Set());
+  const [requestingBookId, setRequestingBookId] = useState<string | null>(null);
 
   /**
    * Fetch all books from the database
    */
   useEffect(() => {
-    const fetchBooks = async () => {
+    const fetchData = async () => {
       try {
+        // Fetch books
         const { data, error } = await supabase
           .from('books')
           .select('*')
@@ -61,6 +68,19 @@ export default function StudentBooks() {
         // Extract unique categories
         const uniqueCategories = [...new Set((data || []).map((b) => b.category))];
         setCategories(uniqueCategories);
+
+        // Fetch user's existing requests (pending/approved)
+        if (user) {
+          const { data: reqData } = await supabase
+            .from('book_requests')
+            .select('book_id')
+            .eq('user_id', user.id)
+            .in('status', ['pending', 'approved']);
+
+          if (reqData) {
+            setRequestedBookIds(new Set(reqData.map((r) => r.book_id)));
+          }
+        }
       } catch (error) {
         console.error('Error fetching books:', error);
       } finally {
@@ -68,8 +88,8 @@ export default function StudentBooks() {
       }
     };
 
-    fetchBooks();
-  }, []);
+    fetchData();
+  }, [user]);
 
   /**
    * Filter books based on search query and category
@@ -95,6 +115,37 @@ export default function StudentBooks() {
     setFilteredBooks(filtered);
   }, [searchQuery, categoryFilter, books]);
 
+  /**
+   * Handle book request (max 3 pending)
+   */
+  const handleRequestBook = async (bookId: string) => {
+    if (!user) return;
+
+    const pendingCount = requestedBookIds.size;
+    if (pendingCount >= 3) {
+      toast.error('You can have a maximum of 3 active requests.');
+      return;
+    }
+
+    setRequestingBookId(bookId);
+    try {
+      const { error } = await supabase.from('book_requests').insert({
+        user_id: user.id,
+        book_id: bookId,
+      });
+
+      if (error) throw error;
+
+      setRequestedBookIds((prev) => new Set([...prev, bookId]));
+      toast.success('Book request submitted! The admin will review it.');
+    } catch (error: any) {
+      console.error('Error requesting book:', error);
+      toast.error('Failed to submit request. Please try again.');
+    } finally {
+      setRequestingBookId(null);
+    }
+  };
+
   if (loading) {
     return (
       <DashboardLayout>
@@ -112,7 +163,7 @@ export default function StudentBooks() {
         <div className="page-header">
           <h1 className="page-title">Browse Books</h1>
           <p className="page-description">
-            Explore our library collection. Contact the librarian to borrow a book.
+            Explore our library collection. Click "Request" to borrow a book — the admin will review and approve it.
           </p>
         </div>
 
@@ -188,7 +239,26 @@ export default function StudentBooks() {
                   <h3 className="text-base font-semibold text-foreground mb-1 line-clamp-2">
                     {book.title}
                   </h3>
-                  <p className="text-sm text-muted-foreground">by {book.author}</p>
+                  <p className="text-sm text-muted-foreground mb-3">by {book.author}</p>
+                  {requestedBookIds.has(book.id) ? (
+                    <Button size="sm" variant="outline" disabled className="w-full">
+                      Requested
+                    </Button>
+                  ) : (
+                    <Button
+                      size="sm"
+                      className="w-full"
+                      disabled={book.quantity === 0 || requestingBookId === book.id}
+                      onClick={() => handleRequestBook(book.id)}
+                    >
+                      {requestingBookId === book.id ? (
+                        <Loader2 className="h-4 w-4 animate-spin mr-1" />
+                      ) : (
+                        <SendHorizonal className="h-4 w-4 mr-1" />
+                      )}
+                      {book.quantity === 0 ? 'Unavailable' : 'Request Book'}
+                    </Button>
+                  )}
                 </CardContent>
               </Card>
             ))}
@@ -203,9 +273,10 @@ export default function StudentBooks() {
         {/* Help Text */}
         <div className="mt-8 p-4 bg-muted rounded-lg">
           <p className="text-sm text-muted-foreground">
-            <strong>How to borrow a book:</strong> Visit the library desk and request the book
-            from the librarian. They will issue the book to your account. Books are issued for
-            14 days by default.
+            <strong>How to borrow a book:</strong> Click the "Request Book" button on any
+            available book. The admin will review your request and approve it. Once approved,
+            the book will automatically appear in your "My Books" section. You can have up to
+            3 pending requests at a time. Books are issued for 14 days by default.
           </p>
         </div>
       </div>
