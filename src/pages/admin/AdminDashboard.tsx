@@ -107,19 +107,31 @@ export default function AdminDashboard() {
           .from('issued_books')
           .select(`
             id,
+            user_id,
             issue_date,
             return_date,
-            books (title),
-            profiles:user_id (name)
+            books (title)
           `)
           .order('created_at', { ascending: false })
           .limit(5);
 
         if (recentData) {
+          // Fetch profiles for recent activities
+          const recentUserIds = [...new Set(recentData.map((d: any) => d.user_id))];
+          const { data: recentProfiles } = await supabase
+            .from('profiles')
+            .select('user_id, name')
+            .in('user_id', recentUserIds.length > 0 ? recentUserIds : ['none']);
+
+          const profileMap: Record<string, string> = {};
+          (recentProfiles || []).forEach((p: any) => {
+            profileMap[p.user_id] = p.name;
+          });
+
           const activities: RecentActivity[] = recentData.map((item: any) => ({
             id: item.id,
             bookTitle: item.books?.title || 'Unknown Book',
-            studentName: item.profiles?.name || 'Unknown Student',
+            studentName: profileMap[item.user_id] || 'Unknown Student',
             action: item.return_date ? 'returned' : 'issued',
             date: item.return_date || item.issue_date,
           }));
