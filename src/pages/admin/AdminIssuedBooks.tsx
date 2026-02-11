@@ -39,10 +39,12 @@ import {
   AlertDialogTitle,
 } from '@/components/ui/alert-dialog';
 import { supabase } from '@/integrations/supabase/client';
-import { Plus, Search, Loader2, RotateCcw, AlertCircle } from 'lucide-react';
+import { Plus, Search, Loader2, RotateCcw, AlertCircle, ChevronLeft, ChevronRight } from 'lucide-react';
 import { format, differenceInDays, parseISO } from 'date-fns';
 import { toast } from 'sonner';
 import { cn } from '@/lib/utils';
+
+const PAGE_SIZE = 10;
 
 // Issued book type definition
 interface IssuedBook {
@@ -70,6 +72,7 @@ export default function AdminIssuedBooks() {
   const [loading, setLoading] = useState(true);
   const [returnBookId, setReturnBookId] = useState<string | null>(null);
   const [isReturning, setIsReturning] = useState(false);
+  const [currentPage, setCurrentPage] = useState(1);
 
   /**
    * Fetch all issued books from the database
@@ -174,7 +177,14 @@ export default function AdminIssuedBooks() {
     }
 
     setFilteredBooks(filtered);
+    setCurrentPage(1);
   }, [searchQuery, statusFilter, issuedBooks]);
+
+  const totalPages = Math.ceil(filteredBooks.length / PAGE_SIZE);
+  const paginatedBooks = filteredBooks.slice(
+    (currentPage - 1) * PAGE_SIZE,
+    currentPage * PAGE_SIZE
+  );
 
   /**
    * Handle book return
@@ -333,7 +343,7 @@ export default function AdminIssuedBooks() {
                   </TableCell>
                 </TableRow>
               ) : (
-                filteredBooks.map((book) => (
+                paginatedBooks.map((book) => (
                   <TableRow key={book.id}>
                     <TableCell className="font-medium">{book.bookTitle}</TableCell>
                     <TableCell>
@@ -395,10 +405,36 @@ export default function AdminIssuedBooks() {
           </Table>
         </div>
 
-        {/* Record Count */}
-        <p className="text-sm text-muted-foreground mt-4">
-          Showing {filteredBooks.length} of {issuedBooks.length} records
-        </p>
+        {/* Pagination */}
+        <div className="flex items-center justify-between mt-4">
+          <p className="text-sm text-muted-foreground">
+            Showing {paginatedBooks.length} of {filteredBooks.length} records
+            {filteredBooks.length !== issuedBooks.length && ` (filtered from ${issuedBooks.length})`}
+          </p>
+          {totalPages > 1 && (
+            <div className="flex items-center gap-2">
+              <Button
+                variant="outline"
+                size="sm"
+                onClick={() => setCurrentPage((p) => Math.max(1, p - 1))}
+                disabled={currentPage === 1}
+              >
+                <ChevronLeft className="h-4 w-4" />
+              </Button>
+              <span className="text-sm text-muted-foreground">
+                Page {currentPage} of {totalPages}
+              </span>
+              <Button
+                variant="outline"
+                size="sm"
+                onClick={() => setCurrentPage((p) => Math.min(totalPages, p + 1))}
+                disabled={currentPage === totalPages}
+              >
+                <ChevronRight className="h-4 w-4" />
+              </Button>
+            </div>
+          )}
+        </div>
 
         {/* Return Confirmation Dialog */}
         <AlertDialog open={!!returnBookId} onOpenChange={() => setReturnBookId(null)}>

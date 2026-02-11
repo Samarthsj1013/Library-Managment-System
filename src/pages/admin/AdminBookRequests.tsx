@@ -22,6 +22,25 @@ import { Loader2, Check, X, Clock } from 'lucide-react';
 import { toast } from 'sonner';
 import { addDays, format } from 'date-fns';
 
+const sendNotificationEmail = async (
+  to: string,
+  studentName: string,
+  bookTitle: string,
+  status: 'approved' | 'rejected',
+  adminNote?: string
+) => {
+  try {
+    const response = await supabase.functions.invoke('send-notification', {
+      body: { to, studentName, bookTitle, status, adminNote },
+    });
+    if (response.error) {
+      console.error('Email notification error:', response.error);
+    }
+  } catch (err) {
+    console.error('Failed to send email notification:', err);
+  }
+};
+
 interface BookRequest {
   id: string;
   user_id: string;
@@ -135,6 +154,10 @@ export default function AdminBookRequests() {
       if (qtyError) throw qtyError;
 
       toast.success('Request approved and book issued!');
+      // Send email notification
+      if (request.student_email) {
+        sendNotificationEmail(request.student_email, request.student_name || 'Student', request.book_title || 'Book', 'approved');
+      }
       fetchRequests();
     } catch (error) {
       console.error('Error approving request:', error);
@@ -154,6 +177,11 @@ export default function AdminBookRequests() {
       if (error) throw error;
 
       toast.success('Request rejected');
+      // Send email notification - fetch student info
+      const req = requests.find(r => r.id === requestId);
+      if (req?.student_email) {
+        sendNotificationEmail(req.student_email, req.student_name || 'Student', req.book_title || 'Book', 'rejected', 'Rejected by admin');
+      }
       fetchRequests();
     } catch (error) {
       console.error('Error rejecting request:', error);
