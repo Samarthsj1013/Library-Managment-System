@@ -34,7 +34,7 @@ import AdminStudents from "./pages/admin/AdminStudents";
 import AdminIssuedBooks from "./pages/admin/AdminIssuedBooks";
 import AdminIssueBook from "./pages/admin/AdminIssueBook";
 import AdminBookRequests from "./pages/admin/AdminBookRequests";
-
+import AdminFineReport from "./pages/admin/AdminFineReport";
 // Student pages
 import StudentDashboard from "./pages/student/StudentDashboard";
 import StudentBooks from "./pages/student/StudentBooks";
@@ -159,6 +159,14 @@ function AppRoutes() {
         element={
           <ProtectedRoute requiredRole="admin">
             <AdminBookRequests />
+          </ProtectedRoute>
+        }
+      />
+      <Route
+        path="/admin/fines"
+        element={
+          <ProtectedRoute requiredRole="admin">
+            <AdminFineReport />
           </ProtectedRoute>
         }
       />
