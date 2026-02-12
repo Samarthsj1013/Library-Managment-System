@@ -25,7 +25,7 @@ interface AuthContextType {
   userRole: UserRole;
   loading: boolean;
   signIn: (email: string, password: string) => Promise<{ error: Error | null }>;
-  signUp: (email: string, password: string, name: string) => Promise<{ error: Error | null }>;
+  signUp: (email: string, password: string, name: string, usn?: string, department?: string) => Promise<{ error: Error | null }>;
   signOut: () => Promise<void>;
 }
 
@@ -122,7 +122,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
    * Sign up with email, password, and name
    * The profile and role are automatically created via database trigger
    */
-  const signUp = async (email: string, password: string, name: string) => {
+  const signUp = async (email: string, password: string, name: string, usn?: string, department?: string) => {
     const redirectUrl = `${window.location.origin}/`;
     
     const { error } = await supabase.auth.signUp({
@@ -131,7 +131,9 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       options: {
         emailRedirectTo: redirectUrl,
         data: {
-          name: name,
+          name,
+          usn,
+          department,
         },
       },
     });
