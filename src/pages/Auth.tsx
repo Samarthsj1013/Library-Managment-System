@@ -29,6 +29,8 @@ const loginSchema = z.object({
 
 const signupSchema = z.object({
   name: z.string().min(2, 'Name must be at least 2 characters').max(100, 'Name is too long'),
+  usn: z.string().min(3, 'USN is required'),
+  department: z.string().min(2, 'Department is required'),
   email: z.string().email('Please enter a valid email address'),
   password: z.string().min(6, 'Password must be at least 6 characters'),
   confirmPassword: z.string(),
@@ -46,6 +48,8 @@ export default function Auth() {
   const [loginEmail, setLoginEmail] = useState('');
   const [loginPassword, setLoginPassword] = useState('');
   const [signupName, setSignupName] = useState('');
+  const [signupUsn, setSignupUsn] = useState('');
+  const [signupDepartment, setSignupDepartment] = useState('');
   const [signupEmail, setSignupEmail] = useState('');
   const [signupPassword, setSignupPassword] = useState('');
   const [signupConfirmPassword, setSignupConfirmPassword] = useState('');
@@ -103,6 +107,8 @@ export default function Auth() {
     // Validate form inputs
     const result = signupSchema.safeParse({
       name: signupName,
+      usn: signupUsn,
+      department: signupDepartment,
       email: signupEmail,
       password: signupPassword,
       confirmPassword: signupConfirmPassword,
@@ -115,7 +121,7 @@ export default function Auth() {
 
     setIsSubmitting(true);
     
-    const { error } = await signUp(signupEmail, signupPassword, signupName);
+    const { error } = await signUp(signupEmail, signupPassword, signupName, signupUsn, signupDepartment);
     
     if (error) {
       // Handle specific error messages
@@ -218,6 +224,28 @@ export default function Auth() {
                     />
                   </div>
                   <div className="space-y-2">
+                    <Label htmlFor="signup-usn">USN (example: 1GA23IS00-)</Label>
+                    <Input
+                      id="signup-usn"
+                      type="text"
+                      placeholder="1GA23IS00-"
+                      value={signupUsn}
+                      onChange={(e) => setSignupUsn(e.target.value)}
+                      required
+                    />
+                  </div>
+                  <div className="space-y-2">
+                    <Label htmlFor="signup-department">Department (example: Information Science and Engineering)</Label>
+                    <Input
+                      id="signup-department"
+                      type="text"
+                      placeholder="Information Science and Engineering"
+                      value={signupDepartment}
+                      onChange={(e) => setSignupDepartment(e.target.value)}
+                      required
+                    />
+                  </div>
+                  <div className="space-y-2">
                     <Label htmlFor="signup-email">Email</Label>
                     <Input
                       id="signup-email"
@@ -267,11 +295,6 @@ export default function Auth() {
         </Card>
 
         {/* Footer note */}
-        <p className="text-center text-sm text-muted-foreground mt-6">
-          New users are automatically assigned the Student role.
-          <br />
-          Contact the librarian to request Admin access.
-        </p>
       </div>
     </div>
   );

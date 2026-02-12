@@ -26,6 +26,7 @@ import {
 } from 'lucide-react';
 import { useState } from 'react';
 import { cn } from '@/lib/utils';
+import NotificationBell from '@/components/NotificationBell';
 
 interface NavItem {
   label: string;
@@ -111,9 +112,12 @@ export default function DashboardLayout({ children }: DashboardLayoutProps) {
 
           {/* User Info & Logout */}
           <div className="p-4 border-t border-sidebar-border">
-            <div className="mb-4 px-4">
-              <p className="text-sm font-medium text-sidebar-foreground">{user?.email}</p>
-              <p className="text-xs text-sidebar-foreground/70 capitalize">{userRole} Account</p>
+            <div className="mb-4 px-4 flex items-center justify-between">
+              <div>
+                <p className="text-sm font-medium text-sidebar-foreground">{user?.email}</p>
+                <p className="text-xs text-sidebar-foreground/70 capitalize">{userRole} Account</p>
+              </div>
+              {userRole === 'student' && <NotificationBell />}
             </div>
             <Button
               variant="ghost"

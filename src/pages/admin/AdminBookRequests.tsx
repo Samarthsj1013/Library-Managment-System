@@ -136,6 +136,14 @@ export default function AdminBookRequests() {
       if (qtyError) throw qtyError;
 
       toast.success('Request approved and book issued!');
+
+      // Send in-app notification to student
+      await supabase.from('notifications').insert({
+        user_id: request.user_id,
+        title: 'Book Request Approved',
+        message: `Your request for "${request.book_title}" has been approved and issued to you.`,
+      });
+
       fetchRequests();
     } catch (error) {
       console.error('Error approving request:', error);
@@ -155,6 +163,17 @@ export default function AdminBookRequests() {
       if (error) throw error;
 
       toast.success('Request rejected');
+
+      // Send in-app notification to student
+      const req = requests.find(r => r.id === requestId);
+      if (req) {
+        await supabase.from('notifications').insert({
+          user_id: req.user_id,
+          title: 'Book Request Rejected',
+          message: `Your request for "${req.book_title}" has been rejected.`,
+        });
+      }
+
       fetchRequests();
     } catch (error) {
       console.error('Error rejecting request:', error);

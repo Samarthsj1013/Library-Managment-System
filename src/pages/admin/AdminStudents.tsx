@@ -32,6 +32,8 @@ interface Student {
   userId: string;
   name: string;
   email: string;
+  usn: string;
+  department: string;
   createdAt: string;
   booksIssued: number;
 }
@@ -61,7 +63,7 @@ export default function AdminStudents() {
         const userIds = (rolesData || []).map((r: any) => r.user_id);
         const { data: profilesData } = await supabase
           .from('profiles')
-          .select('user_id, name, email, created_at')
+          .select('user_id, name, email, usn, department, created_at')
           .in('user_id', userIds.length > 0 ? userIds : ['none']);
 
         const profileMap: Record<string, any> = {};
@@ -89,6 +91,8 @@ export default function AdminStudents() {
           userId: role.user_id,
           name: profileMap[role.user_id]?.name || 'Unknown',
           email: profileMap[role.user_id]?.email || 'Unknown',
+          usn: profileMap[role.user_id]?.usn || '-',
+          department: profileMap[role.user_id]?.department || '-',
           createdAt: profileMap[role.user_id]?.created_at || new Date().toISOString(),
           booksIssued: issuedCounts[role.user_id] || 0,
         }));
@@ -165,6 +169,8 @@ export default function AdminStudents() {
             <TableHeader>
               <TableRow>
                 <TableHead>Name</TableHead>
+                <TableHead>USN</TableHead>
+                <TableHead>Department</TableHead>
                 <TableHead>Email</TableHead>
                 <TableHead>Registered On</TableHead>
                 <TableHead className="text-center">Books Issued</TableHead>
@@ -173,7 +179,7 @@ export default function AdminStudents() {
             <TableBody>
               {filteredStudents.length === 0 ? (
                 <TableRow>
-                  <TableCell colSpan={4} className="text-center py-8 text-muted-foreground">
+                  <TableCell colSpan={6} className="text-center py-8 text-muted-foreground">
                     <Users className="h-12 w-12 mx-auto mb-2 opacity-50" />
                     {searchQuery
                       ? 'No students found matching your search.'
@@ -184,6 +190,8 @@ export default function AdminStudents() {
                 paginatedStudents.map((student) => (
                   <TableRow key={student.id}>
                     <TableCell className="font-medium">{student.name}</TableCell>
+                    <TableCell>{student.usn}</TableCell>
+                    <TableCell>{student.department}</TableCell>
                     <TableCell>{student.email}</TableCell>
                     <TableCell>
                       {format(new Date(student.createdAt), 'MMM d, yyyy')}
